@@ -17,7 +17,7 @@ namespace S3FileLoadApi.Models
             Request UUID
         */
         [Key]
-        public Guid RequestUuid { get; set; }
+        public string RequestId { get; set; }
         /**
             Request start DateTime
         */

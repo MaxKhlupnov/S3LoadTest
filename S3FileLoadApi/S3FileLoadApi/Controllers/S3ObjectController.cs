@@ -58,7 +58,7 @@ namespace S3FileLoadApi.Controllers
 
             ObjectGetRequestStat requestStat = new ObjectGetRequestStat()
             {
-                RequestUuid = Guid.NewGuid(),
+                RequestId = Guid.NewGuid().ToString(),
                 ObjectName = req.Key,
                 ProcessingHost = HttpContext.Request.Host.Host,
                 RemoteClientHost = HttpContext.Connection.RemoteIpAddress.ToString(),
@@ -72,10 +72,11 @@ namespace S3FileLoadApi.Controllers
                 watch.Start();
                 GetObjectResponse res = await this.yandexS3.GetObjectAsync(req);
                 watch.Stop();
+                requestStat.RequestId = res.ResponseMetadata.RequestId; // rewrite request id with actual s3 request id
                 requestStat.ElapsedMs = watch.ElapsedMilliseconds;
                 requestStat.ResponseCode = (int) res.HttpStatusCode;
                 requestStat.ContentMd5Hash = res.Metadata["X-Amz-Meta-Md5"];
-                requestStat.ContentLength = res.ContentLength;
+                requestStat.ContentLength = res.ContentLength;                           
                 requestStat.Md5HashMatch = ComapreHash(res.Metadata["X-Amz-Meta-Md5"], res.ResponseStream);
             }
             catch (Exception ex)
